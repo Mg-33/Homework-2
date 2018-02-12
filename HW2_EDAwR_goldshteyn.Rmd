@@ -77,6 +77,7 @@ add more code chunks as needed.
 Let's load a few libraries we'll need:
 
 ```{r}
+library(plyr)
 library(dplyr)
 library(ggplot2)
 ```
@@ -126,7 +127,27 @@ income for the entire US.
 Write a short paragraph describing the distribution of median incomes.
 
 ```{r}
-# ggplot(???) + geom_histogram(???)
+
+#median_state_income <- ddply(county_df,.(State),summarize,median_income=mean(Income, na.rm=TRUE))
+
+#median_state_income
+
+#Histogram
+ ggplot(county_df,aes(x=county_df$Income)) + geom_histogram(binwidth=1000) + labs(x= "income")
+
+#boxplot
+ ggplot(county_df,aes(y=county_df$Income, x = county_df$Region)) + geom_boxplot() 
+ #+ scale_y_continuous(name = "Meudian Income", breaks = seq(0, 100000, 10000))
+
+#Kernal Density Plot
+ ggplot(county_df,aes(x=county_df$Income, fill = county_df$Region)) + geom_density(alpha = 0.4) 
+ 
+#Violin Plot
+ ggplot(county_df, aes(y=county_df$Income, x = county_df$Region)) + geom_violin()
+ 
+ 
+
+
 ```
 
 ### Problem 3 - Histogram of total population
@@ -134,6 +155,7 @@ Write a short paragraph describing the distribution of median incomes.
 Create a histogram of total population for counties in the US.
 
 ```{r histo_totpop}
+ggplot(county_df,aes(x = TotalPop)) + geom_histogram(binwidth = 100000) + scale_x_continuous(name = "pop", limits=c(0, 1000000)) +scale_y_continuous(name = "pop", limits=c(0, 750))
 
 ```
 
@@ -145,7 +167,7 @@ Repeat the histogram about but make the following style changes to the plot.
 * Change the colors of the bars to something other than the default black
 
 ```{r histo_stylechanges}
-
+ggplot(county_df,aes(x = TotalPop)) + geom_histogram(binwidth = 100000,colour = "black", fill = "lightblue") + scale_x_continuous(name = "Total Population", limits=c(0, 1000000)) +scale_y_continuous(name = "Number of Counties", limits=c(0, 750)) +ggtitle("Distrubtion of population for US counties")
 ```
 
 **Hacker Extra** - Also create a kernel density plot overlaid on a histogram of
@@ -155,6 +177,9 @@ Repeat the histogram but only for counties with less than 2.5 million people.
 
 ```{r histo_lt2.5m}
 
+
+
+ggplot(county_df[county_df$TotalPop < 2500000,],aes(x = TotalPop)) + geom_histogram(binwidth = 100000,colour = "black", fill = "lightblue") + scale_x_continuous(name = "Total Population", limits=c(0, 2500000)) +scale_y_continuous(name = "Number of Counties", limits=c(0, 200)) +ggtitle("Distrubtion of population for US counties")
 ```
 
 
@@ -169,13 +194,23 @@ differ with respect to distribution of median income over the counties?
 
 ```{r bp_inc_by_peninsula}
 
+ggplot(county_df,aes(y=county_df$Income, x = county_df$Division)) + geom_boxplot()+ theme(axis.text.x = element_text(angle = 45, hjust = 1))+ ggtitle("Box Plots of Income by Pennisula") + xlab("Pennisula")+ylab("Income")
 ```
 
 Create several more boxplots showing how the peninsulas compare with respect to
 some of the other variables. Summarize your findings in a few short paragraphs.
 
 ```{r more_boxplots}
+ggplot(county_df,aes(y=county_df$Employed, x = county_df$Division)) + geom_boxplot()+ theme(axis.text.x = element_text(angle = 45, hjust = 1))+ ggtitle("Box Plots of Income by Pennisula") + xlab("Pennisula")+ylab("Income")
 
+ggplot(county_df,aes(y=county_df$Office, x = county_df$Division)) + geom_boxplot()+ theme(axis.text.x = element_text(angle = 45, hjust = 1))+ ggtitle("Box Plots of Office Job Percentage by Pennisula") + xlab("Pennisula")+ylab("Office Job Percentage")
+
+ggplot(county_df,aes(y=county_df$Professional, x = county_df$Division)) + geom_boxplot()+ theme(axis.text.x = element_text(angle = 45, hjust = 1))+ ggtitle("Box Plots of Income by Pennisula") + xlab("Pennisula")+ylab("Percentage of Professionals")
+
+ggplot(county_df,aes(y=county_df$Unemployment, x = county_df$Division)) + geom_boxplot()+ theme(axis.text.x = element_text(angle = 45, hjust = 1))+ ggtitle("Box Plots of Unemployment by Pennisula") + xlab("Pennisula")+ylab("Percentage of Unemployment")
+
+
+#After analysis of the graphs provided we are able to conclude that the income is higher in areas that have a higher level of professionals. The areas that have high level of unemployment also contain low level of income.
 ```
 
 ### Problem 5 - How do regions of the country compare?
@@ -187,7 +222,14 @@ distribution of MeanCommute time. Make sure your graph has a title and good axis
 labels.
 
 ```{r faceted_histo}
+ggplot(county_df,aes(x=county_df$MeanCommute, fill = Region)) + geom_histogram(binwidth=1) + labs(x= "Mean Commute") + facet_wrap(~Region) + ggtitle("Average Commute by Region") + ylab("Average Commutes")
 
+ggplot(county_df,aes(x=county_df$Carpool, fill = Region)) + geom_histogram(binwidth=1) + labs(x= "CarPool") + facet_wrap(~Region) +
+ggtitle("Number of Carpools By Region")+ ylab("Number of Carpools")
+
+ggplot(county_df,aes(x=county_df$Professional, fill = Region)) + geom_histogram(binwidth=5) + labs(x= "Professional") + facet_wrap(~Region) +ggtitle("Professionals by Region") + ylab("Number of Professionals")
+
+ggplot(county_df,aes(x=county_df$Service, fill = Region)) + geom_histogram(binwidth=1) + labs(x= "Service") + facet_wrap(~Region) + ylab("Number in Region") + xlab ("Total Service Jobs")
 ```
 
 ### Problem 6 - Basic bar chart
@@ -196,7 +238,7 @@ Create a bar chart showing the number of counties by Region in the US. Make sure
 your graph has a title and good axis labels.
 
 ```{r bar_counties_by_region}
-
+ggplot(county_df, aes(x=factor(Region))) + geom_bar(stat = "count")
 ```
 
 ### Problem 7 - Basic scatter plots
@@ -205,14 +247,14 @@ Create a scatter plot using the Michigan only data frame comparing
 Income and MeanCommute.
 
 ```{r xy_inc_commute}
-
+ggplot(county_MI,aes(x=Income,y=MeanCommute)) + geom_point()
 ```
 
 Create a modified version of the above scatter plot in which the point color
 is mapped to peninsula.
 
 ```{r xy_inc_commute_peninsula}
-
+ggplot(county_MI,aes(x=Income,y=MeanCommute,fill= Region)) + geom_point(color = "red")
 ```
 
 Your thoughts on the relationship between these variables?
@@ -222,6 +264,18 @@ you facet by peninsula as well. How do the relationships compare across the
 peninsulas?
 
 ```{r xy_faceted_peninsula}
+ggplot(county_df,aes(y=Income,x=MeanCommute)) + geom_point(aes(colour = factor(Region))) + facet_wrap(~Region)
+
+ggplot(county_df,aes(y=Income,x=Professional)) + geom_point(aes(colour = factor(Region))) + facet_wrap(~Region)
+
+ggplot(county_df,aes(y=Income,x=Unemployment)) + geom_point(aes(colour = factor(Region))) + facet_wrap(~Region)
+
+ggplot(county_df,aes(y=Income,x=log(Employed))) + geom_point(aes(colour = factor(Region))) + facet_wrap(~Region)
+
+ggplot(county_df,aes(y=Income,x=log(TotalPop))) + geom_point(aes(colour = factor(Region))) + facet_wrap(~Region)
+
+# the professional to income relationship is strong in most cases such as north east though doenst have a strong correlation in the other regions. Income to Employed also has a correlation in all areas.
+
 
 ```
 
@@ -231,7 +285,7 @@ Now use the full US data frame.
 Create a scatter plot of TotalPop by Income.
 
 ```{r xy_pop_inc}
-
+ggplot(county_df,aes(x=log(TotalPop),y=Income)) + geom_point()
 ```
 
 The widely varying values make this difficult to interpret in terms of looking
