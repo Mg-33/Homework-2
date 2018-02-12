@@ -43,6 +43,8 @@ for this homework assignment in your GitHub account. Periodically push your comm
 to GitHub. When done with the assignment, paste in the URL of your GitHub project
 so that I can go look at it.
 
+[Michael Goldshteyn GitHub](https://github.com/Mg-33/Homework-2/)
+
 ## Step 3 - Set working directory and explore data folder
 
 Set the working directory or create an R Studio project in the current folder. You'll notice that there is a folder named **data**.
@@ -294,7 +296,8 @@ the plotted data itself to use a base 10 logarithmic scale (or transform).
 Write a short paragraph on why one might want to use a log scale or log
 transform of data when plotting.
 
-### Hacker Extra - More analysis
+### Hacker Extra - More analysis 
+
 
 Do some additional plotting to look for interesting patterns or relationships
 either in the full US dataset or the MI only dataset. In addition, try out
